@@ -1,0 +1,14 @@
+const debug = require("debug")("node:main");
+const config = require("config");
+const express = require("express");
+const app = express();
+
+require("./startup/routes")(app);
+require("./startup/db")();
+
+const port = process.env.PORT || config.get("port");
+const server = app.listen(port, () => {
+    debug(`Listen on port ${port}...`);
+});
+
+module.exports = server;
