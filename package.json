@@ -23,11 +23,14 @@
     "jsonwebtoken": "^8.4.0",
     "lodash": "^4.17.11",
     "moment": "^2.22.2",
+    "mongoose": "^5.3.14",
     "winston": "^3.1.0",
     "winston-mongodb": "^4.0.3"
   },
   "devDependencies": {
+    "debug": "^4.1.0",
     "jest": "^23.6.0",
+    "nodemon": "^1.18.7",
     "supertest": "^3.3.0"
   }
 }
