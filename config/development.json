@@ -1,20 +1,20 @@
 {
-    "jwtPrivateKey": "unsecureKey",
-    "db": {
-        "uri": "mongodb://localhost:27017/questionEditor",
-        "options": {
-            "useNewUrlParser": true
-        }
-    },
-    "query": {
-        "filter": "filter",
-        "search": "search",
-        "sort": "sort"
-    },
-    "page": {
-        "name": "page",
-        "size": 4
-    },
-    "port": "3900",
-    "requiresAuth": false
+	"jwtPrivateKey": "",
+	"db": {
+		"uri": "mongodb://localhost:27017/questionEditor",
+		"options": {
+			"useNewUrlParser": true
+		}
+	},
+	"query": {
+		"filter": "filter",
+		"search": "search",
+		"sort": "sort"
+	},
+	"page": {
+		"name": "page",
+		"size": 4
+	},
+	"port": "3900",
+	"requiresAuth": true
 }
