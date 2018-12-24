@@ -38,7 +38,11 @@ router.post("/", [validate(validator)], async (req, res) => {
 	user.password = await bcrypt.hash(user.password, salt);
 	await user.save();
 
-	res.send(pick(user, ["_id", "name", "email"]));
+	const token = user.generateAuthToken();
+	res
+		.header("x-auth-token", token)
+		.header("access-control-expose-headers", "x-auth-token")
+		.send(pick(user, ["_id", "name", "email"]));
 	debug("New user was created");
 });
 
