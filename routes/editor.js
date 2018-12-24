@@ -36,14 +36,14 @@ router.post("/", [validate(validator)], async (req, res) => {
 		question,
 		answers,
 		author: {
-			author: "5c18a4bc086d3702a4d04db3",
-			name: "Artem"
+			author: "5c18a4d3086d3702a4d04db4",
+			name: "Val"
 		},
 		description
 	});
 	await test.save();
 
-	const user = await User.findById("5c18a4bc086d3702a4d04db3");
+	const user = await User.findById("5c18a4d3086d3702a4d04db4");
 
 	user.tests.push({
 		test: test._id,
@@ -63,7 +63,8 @@ router.put("/:id", [validateObjectId, validate(validator)], async (req, res) => 
 		verified: false,
 		patch: {
 			$eq: null
-		}
+		},
+		"author.author": req.user._id
 	}, req.body, {
 		new: true
 	});
