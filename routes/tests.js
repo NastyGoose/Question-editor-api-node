@@ -80,7 +80,8 @@ router.put("/:id", [
 	}, {
 		new: true
 	});
-	if (!test) req.status(404).send("Test was not found.");
+	if (!test) return res.status(404).send("Test was not found.");
+	//if (!req.user) return res.send(test);
 
 	const user = await User.findById({
 		_id: "5c18a4bc086d3702a4d04db3"
@@ -107,7 +108,6 @@ router.patch("/:id", [
 	})
 ], async (req, res) => {
 	debug("Trying to submit with id");
-
 	const test = await Test.findOneAndUpdate({
 		_id: req.params.id,
 		"answers._id": req.body.answerId
@@ -122,6 +122,12 @@ router.patch("/:id", [
 	if (!test) return res.status(404).send("The test was not found.");
 
 	const isAnsweredCorrectly = checkUnswers(test, req.body.answerId);
+	if (!req.user) return res.send({
+		isAnsweredCorrectly,
+		correctAnswer: test.answers.find(t => t.isCorrect === true),
+		description: test.description
+	});
+
 	await User.updateOne({
 		_id: "5c18a4bc086d3702a4d04db3", // req.user.id in future
 		"tests.test": test._id
@@ -132,7 +138,11 @@ router.patch("/:id", [
 		}
 	});
 
-	res.send(isAnsweredCorrectly);
+	res.send({
+		isAnsweredCorrectly,
+		correctAnswer: test.answers.find(t => t.isCorrect === true),
+		description: test.description
+	});
 	debug("Test was submited.");
 });
 
@@ -166,10 +176,48 @@ router.patch("/rating/:id", [validateObjectId], async (req, res) => {
 	debug("Test was updated.");
 });
 
+router.patch("/verify/:id", validateObjectId, async (req, res) => {
+	debug("Trying to verifie with id");
+	const test = await Test.findByIdAndUpdate(req.params.id, {
+		verified: true
+	});
+	if (!validateDocument(res, test)) return;
+
+	res.send({
+		verified: true
+	});
+	debug(`The test with id: ${test._id} was verified`);
+});
+
+router.patch("/unverify/:id", validateObjectId, async (req, res) => {
+	debug("Trying to verifie with id");
+	const test = await Test.findByIdAndUpdate(req.params.id, {
+		verified: false
+	});
+	if (!validateDocument(res, test)) return;
+
+	res.send({
+		verified: false
+	});
+	debug(`The test with id: ${test._id} was verified`);
+});
+
 router.delete("/:id", [validateObjectId], async (req, res) => {
 	debug("Trying to delete with id");
-	const test = await Test.findByIdAndDelete(req.params.id);
+	const test = await Test.findOneAndRemove({
+		_id: req.params.id,
+		verified: false,
+		patch: {
+			$eq: null
+		}
+	});
 	if (!validateDocument(res, test)) return;
+
+	await User.updateMany({}, {
+		$pull: {
+			tests: test._id
+		}
+	});
 
 	res.send(test);
 	debug(`The test with id: ${test._id} was deleted`);
