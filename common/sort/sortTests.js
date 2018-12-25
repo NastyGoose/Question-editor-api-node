@@ -3,7 +3,7 @@ const {
 	camelCase
 } = require("lodash");
 const getSortQuery = require("./getSortQuery");
-const debug = require("debug")("node:utils");
+const debug = require("debug")("node:sort");
 
 module.exports = function(tests, sortQuery) {
 	// path can be only like names of tests fields,

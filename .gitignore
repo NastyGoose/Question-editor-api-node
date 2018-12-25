@@ -1,3 +1,4 @@
 node_modules/
 logfile.log
 yarn.lock
+utils/testFile.js

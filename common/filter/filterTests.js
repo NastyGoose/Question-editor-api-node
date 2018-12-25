@@ -1,4 +1,4 @@
-const debug = require("debug")("node:utils");
+const debug = require("debug")("node:filter");
 
 module.exports = function(tests, queryString) {
 	if (!queryString) return tests;
