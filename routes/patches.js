@@ -8,19 +8,29 @@ const {
 	validator,
 	actions
 } = require("../models/patch");
+
 const validate = require("../middleware/validate");
 const validateObjectId = require("../middleware/validateObjectId");
-const patchValidator = require("../validator/validatePatch");
 const getLastReleaseId = require("../middleware/getFirstReleaseId");
+const auth = require("../middleware/auth");
+
+const patchValidator = require("../validator/validatePatch");
+
+const {
+	GET_PATCHES,
+	DELETEandCREATEandRELEASE_PATCHES,
+	ADDandDELETE_TESTS_IN_PATCH
+} = require("../permission/actions");
 
 const fs = require("fs");
 const {
 	size,
 	flattenDeep
 } = require("lodash");
+
 const debug = require("debug")("node:patches");
 
-router.get("/", async (req, res) => {
+router.get("/", auth(GET_PATCHES), async (req, res) => {
 	debug("Trying to get patches");
 	const patches = await Patch.find();
 
@@ -28,7 +38,7 @@ router.get("/", async (req, res) => {
 	debug("Patches was got");
 });
 
-router.get("/:id", validateObjectId, async (req, res) => {
+router.get("/:id", [auth(GET_PATCHES), validateObjectId], async (req, res) => {
 	debug("Trying to get patch");
 	const patch = await Patch.findById(req.params.id).select("-__v");
 
@@ -43,7 +53,7 @@ router.get("/:id", validateObjectId, async (req, res) => {
 	debug("Patch was got");
 });
 
-router.post("/", [validate(validator)], async (req, res) => {
+router.post("/", [auth(DELETEandCREATEandRELEASE_PATCHES), validate(validator)], async (req, res) => {
 	debug("Trying to post patch");
 	const {
 		action,
@@ -78,9 +88,7 @@ router.post("/", [validate(validator)], async (req, res) => {
 	debug("Patch posted");
 });
 
-router.get("/not-released", [
-	validate(patchValidator.release)
-], async (req, res) => {
+router.get("/not-released", auth(GET_PATCHES), async (req, res) => {
 	debug("Trying to get patch");
 	const patch = await Patch.findOne({
 		dateRelease: {
@@ -94,6 +102,7 @@ router.get("/not-released", [
 });
 
 router.patch("/not-released", [
+	auth(DELETEandCREATEandRELEASE_PATCHES),
 	validate(patchValidator.release)
 ], async (req, res) => {
 	debug("Trying to release patch");
@@ -110,7 +119,7 @@ router.patch("/not-released", [
 	debug("Patch was released");
 });
 
-router.patch("/not-released/tests/:id", validateObjectId, async (req, res) => {
+router.patch("/not-released/tests/:id", [auth(ADDandDELETE_TESTS_IN_PATCH), validateObjectId], async (req, res) => {
 	debug("Trying to add test in patch");
 	const patch = await Patch.findOneAndUpdate({
 		dateRelease: {
@@ -143,7 +152,7 @@ router.patch("/not-released/tests/:id", validateObjectId, async (req, res) => {
 	debug("Test was added");
 });
 
-router.delete("/not-released/tests/:id", validateObjectId, async (req, res) => {
+router.delete("/not-released/tests/:id", [auth(ADDandDELETE_TESTS_IN_PATCH), validateObjectId], async (req, res) => {
 	debug("Trying to delete test in patch");
 	const patch = await Patch.findOneAndUpdate({
 		dateRelease: {
@@ -173,7 +182,7 @@ router.delete("/not-released/tests/:id", validateObjectId, async (req, res) => {
 	debug("Test was deleted");
 });
 
-router.delete("/not-released", async (req, res) => {
+router.delete("/not-released", auth(DELETEandCREATEandRELEASE_PATCHES), async (req, res) => {
 	debug("Trying to delete patch");
 	const patch = await Patch.findOneAndRemove({
 		dateRelease: {

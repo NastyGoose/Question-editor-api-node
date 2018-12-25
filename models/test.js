@@ -128,8 +128,7 @@ function validateTest(test, context) {
 			.min(minAnswers)
 			.max(maxAnswers),
 		description: Joi.string().min(3).max(255).default(""),
-		verified: Joi.boolean().default(false),
-		patch: Joi.objectId()
+		verified: Joi.boolean().default(false)
 	};
 
 	return Joi.validate(test, schema, {

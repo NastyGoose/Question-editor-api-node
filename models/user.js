@@ -2,6 +2,9 @@ const config = require("config");
 const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 const mongoose = require("mongoose");
+const {
+	user
+} = require("../permission/types");
 const debug = require("debug")("node:user-model");
 
 const testSchema = {
@@ -67,7 +70,8 @@ const userSchema = new mongoose.Schema({
 		type: [testSchema],
 	},
 	permission: {
-
+		type: Number,
+		default: user
 	}
 });
 
@@ -75,7 +79,9 @@ userSchema.methods.generateAuthToken = function() {
 	const token = jwt.sign({
 		_id: this._id,
 		name: this.name,
-		email: this.email
+		email: this.email,
+		reputation: this.reputation,
+		permission: this.permission
 	}, config.get("jwtPrivateKey"));
 	return token;
 };

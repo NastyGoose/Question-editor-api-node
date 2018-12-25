@@ -7,13 +7,23 @@ const {
 const {
 	User
 } = require("../models/user");
+
 const validate = require("../middleware/validate");
 const validateObjectId = require("../middleware/validateObjectId");
+const auth = require("../middleware/auth");
+
+const {
+	CREATEandCHANGE_TESTS,
+	VERIFY_TESTS
+} = require("../permission/actions");
 
 const debug = require("debug")("node:editor");
 const getCurrentTime = require("../utils/time/getCurrentTime");
 
-router.get("/:id", [validateObjectId], async (req, res) => {
+router.get("/:id", [
+	auth(CREATEandCHANGE_TESTS),
+	validateObjectId
+], async (req, res) => {
 	debug("Trying to get with id");
 	const {
 		id
@@ -25,39 +35,51 @@ router.get("/:id", [validateObjectId], async (req, res) => {
 	debug(`Send test with id: ${id} - ${getCurrentTime()}`);
 });
 
-router.post("/", [validate(validator)], async (req, res) => {
+router.post("/", [
+	auth(CREATEandCHANGE_TESTS, VERIFY_TESTS),
+	validate(validator)
+], async (req, res) => {
 	debug("Trying to post");
 	const {
 		question,
 		answers,
-		description
+		description,
+		verified
 	} = req.body;
 	const test = new Test({
 		question,
 		answers,
 		author: {
-			author: "5c18a4d3086d3702a4d04db4",
-			name: "Val"
+			author: req.user._id,
+			name: req.user.name
 		},
-		description
+		description,
+		verified: req.permission[1] ? verified : false
 	});
 	await test.save();
 
-	const user = await User.findById("5c18a4d3086d3702a4d04db4");
-
-	user.tests.push({
-		test: test._id,
-		isMine: true
+	await User.updateOne({
+		_id: req.user._id
+	}, {
+		$push: {
+			tests: {
+				test: test._id,
+				isMine: true
+			}
+		}
 	});
-
-	user.save();
 
 	res.send(test);
 	debug(`Created test: ${question} - ${getCurrentTime()}`);
 });
 
-router.put("/:id", [validateObjectId, validate(validator)], async (req, res) => {
+router.put("/:id", [
+	auth(CREATEandCHANGE_TESTS, VERIFY_TESTS),
+	validateObjectId,
+	validate(validator)
+], async (req, res) => {
 	debug("Trying to put with id");
+	if (!req.permission[1]) delete req.body.verified;
 	const test = await Test.findOneAndUpdate({
 		_id: req.params.id,
 		verified: false,

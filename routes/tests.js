@@ -12,13 +12,23 @@ const {
 } = require("../models/patch");
 
 const testValidator = require("../validator/validateTest");
+
 const validate = require("../middleware/validate");
 const validateObjectId = require("../middleware/validateObjectId");
 const validateDocument = require("../middleware/validateDocument");
 const getRandomId = require("../middleware/getRandomId");
-const dbQueryBuilder = require("../common/dbQuery/dbQueryBuilder");
+const auth = require("../middleware/auth");
 
+const {
+	ANSWER_TEST,
+	RATE_TESTS,
+	VERIFY_TESTS,
+	DELETE_TESTS
+} = require("../permission/actions");
+
+const dbQueryBuilder = require("../common/dbQuery/dbQueryBuilder");
 const checkUnswers = require("../common/checkUnswers");
+
 const debug = require("debug")("node:tests");
 const config = require("config");
 
@@ -69,6 +79,7 @@ function randomCondition(compareArg) {
 
 //TODO: add Fawn
 router.put("/:id", [
+	auth(ANSWER_TEST),
 	getRandomId(Test, randomCondition),
 	validateObjectId
 ], async (req, res) => {
@@ -84,7 +95,7 @@ router.put("/:id", [
 	//if (!req.user) return res.send(test);
 
 	const user = await User.findById({
-		_id: "5c18a4bc086d3702a4d04db3"
+		_id: req.user._id
 	}).select("tests");
 
 	const result = user.tests.find(t => t.test.toString() === test._id.toString());
@@ -102,6 +113,7 @@ router.put("/:id", [
 
 //TODO: make it with multiple answers
 router.patch("/:id", [
+	auth(ANSWER_TEST),
 	validateObjectId,
 	validate(testValidator.answer, {
 		update: true
@@ -129,7 +141,7 @@ router.patch("/:id", [
 	});
 
 	await User.updateOne({
-		_id: "5c18a4bc086d3702a4d04db3", // req.user.id in future
+		_id: req.user._id,
 		"tests.test": test._id
 	}, {
 		$set: {
@@ -146,9 +158,12 @@ router.patch("/:id", [
 	debug("Test was submited.");
 });
 
-router.patch("/rating/:id", [validateObjectId], async (req, res) => {
+router.patch("/rating/:id", [
+	auth(RATE_TESTS),
+	validateObjectId
+], async (req, res) => {
 	debug("Trying to rate test");
-	const user = await User.findById("5c18a4bc086d3702a4d04db3");
+	const user = await User.findById(req.user._id);
 	// const result = (req.query.action === "like" &&
 	//         user.like(req.params.id)) ||
 	//     (req.query.action === "dislike" &&
@@ -176,7 +191,10 @@ router.patch("/rating/:id", [validateObjectId], async (req, res) => {
 	debug("Test was updated.");
 });
 
-router.patch("/verify/:id", validateObjectId, async (req, res) => {
+router.patch("/verify/:id", [
+	auth(VERIFY_TESTS),
+	validateObjectId
+], async (req, res) => {
 	debug("Trying to verifie with id");
 	const test = await Test.findByIdAndUpdate(req.params.id, {
 		verified: true
@@ -189,7 +207,10 @@ router.patch("/verify/:id", validateObjectId, async (req, res) => {
 	debug(`The test with id: ${test._id} was verified`);
 });
 
-router.patch("/unverify/:id", validateObjectId, async (req, res) => {
+router.patch("/unverify/:id", [
+	auth(VERIFY_TESTS),
+	validateObjectId
+], async (req, res) => {
 	debug("Trying to verifie with id");
 	const test = await Test.findByIdAndUpdate(req.params.id, {
 		verified: false
@@ -202,7 +223,10 @@ router.patch("/unverify/:id", validateObjectId, async (req, res) => {
 	debug(`The test with id: ${test._id} was verified`);
 });
 
-router.delete("/:id", [validateObjectId], async (req, res) => {
+router.delete("/:id", [
+	auth(DELETE_TESTS),
+	validateObjectId
+], async (req, res) => {
 	debug("Trying to delete with id");
 	const test = await Test.findOneAndRemove({
 		_id: req.params.id,
