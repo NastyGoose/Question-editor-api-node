@@ -6,7 +6,6 @@
 			"useNewUrlParser": true
 		}
 	},
-	"port": "3900",
 	"query": {
 		"filter": "filter",
 		"search": "search",
@@ -16,5 +15,6 @@
 		"name": "page",
 		"size": 4
 	},
+	"port": "3900",
 	"requiresAuth": true
 }

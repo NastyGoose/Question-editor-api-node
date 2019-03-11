@@ -1,33 +1,45 @@
 {
-  "name": "question-editor-api-node",
-  "version": "1.0.0",
-  "description": "node package for question editor",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js",
-    "seed": "node seed.js",
-    "test": "jest --watchAll --verbose"
-  },
-  "repository": "https://github.com/krakamod/Question-editor.git",
-  "author": "Artem",
-  "license": "MIT",
-  "dependencies": {
-    "bcrypt": "^3.0.2",
-    "config": "^3.0.0",
-    "cors": "^2.8.5",
-    "express": "^4.16.4",
-    "express-async-errors": "^3.1.1",
-    "fawn": "^2.1.5",
-    "joi": "^14.3.0",
-    "joi-objectid": "^2.0.0",
-    "jsonwebtoken": "^8.4.0",
-    "lodash": "^4.17.11",
-    "moment": "^2.22.2",
-    "winston": "^3.1.0",
-    "winston-mongodb": "^4.0.3"
-  },
-  "devDependencies": {
-    "jest": "^23.6.0",
-    "supertest": "^3.3.0"
-  }
+	"name": "question-editor-api-node",
+	"version": "1.0.0",
+	"description": "node package for question editor",
+	"main": "index.js",
+	"scripts": {
+		"start": "node index.js",
+		"seed": "node seed.js",
+		"test": "jest --watchAll --verbose"
+	},
+	"repository": "https://github.com/krakamod/Question-editor.git",
+	"author": "Artem",
+	"license": "MIT",
+	"dependencies": {
+		"bcrypt": "^3.0.2",
+		"config": "^3.0.0",
+		"cors": "^2.8.5",
+		"express": "^4.16.4",
+		"express-async-errors": "^3.1.1",
+		"fawn": "^2.1.5",
+		"joi": "^14.3.0",
+		"joi-enums-extension": "^2.0.3",
+		"joi-objectid": "^2.0.0",
+		"jsonwebtoken": "^8.4.0",
+		"lodash": "^4.17.11",
+		"moment": "^2.22.2",
+		"mongoose": "^5.3.14",
+		"winston": "^3.1.0",
+		"winston-mongodb": "^4.0.3"
+	},
+	"devDependencies": {
+		"babel-eslint": "^10.0.1",
+		"debug": "^4.1.0",
+		"eslint": "^5.10.0",
+		"eslint-config-prettier": "^3.3.0",
+		"eslint-config-standard": "^12.0.0",
+		"eslint-plugin-import": "^2.14.0",
+		"eslint-plugin-node": "^8.0.0",
+		"eslint-plugin-promise": "^4.0.1",
+		"eslint-plugin-standard": "^4.0.0",
+		"jest": "^23.6.0",
+		"nodemon": "^1.18.7",
+		"supertest": "^3.3.0"
+	}
 }
