@@ -2,17 +2,14 @@ const config = require("config");
 const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 const mongoose = require("mongoose");
-const {
-	user
-} = require("../permission/types");
+const { user } = require("../permission/types");
 const debug = require("debug")("node:user-model");
 
 const testSchema = {
 	test: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "Tests",
-		required: true,
-		unique: true
+		required: true
 	},
 	isMine: {
 		type: Boolean,
@@ -67,7 +64,7 @@ const userSchema = new mongoose.Schema({
 		default: 0
 	},
 	tests: {
-		type: [testSchema],
+		type: [testSchema]
 	},
 	permission: {
 		type: Number,
@@ -76,31 +73,28 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.methods.generateAuthToken = function() {
-	const token = jwt.sign({
-		_id: this._id,
-		name: this.name,
-		email: this.email,
-		reputation: this.reputation,
-		permission: this.permission
-	}, config.get("jwtPrivateKey"));
+	const token = jwt.sign(
+		{
+			_id: this._id,
+			name: this.name,
+			email: this.email,
+			reputation: this.reputation,
+			permission: this.permission
+		},
+		config.get("jwtPrivateKey")
+	);
 	return token;
 };
 
 userSchema.methods.rate = function(testId, action) {
 	const index = this.tests.findIndex(t => t.test.toString() === testId);
-	if (index === -1) this.tests.push({
-		test: test._id
-	});
-	const test = { ...this.tests[index]._doc
-	}; // Some problems with "this", so used field _doc
-	const {
-		isLiked,
-		isDisliked
-	} = test;
-	let {
-		like,
-		dislike
-	} = {
+	if (index === -1)
+		this.tests.push({
+			test: test._id
+		});
+	const test = { ...this.tests[index]._doc }; // Some problems with "this", so used field _doc
+	const { isLiked, isDisliked } = test;
+	let { like, dislike } = {
 		like: 0,
 		dislike: 0
 	}; // -1 is decrement value, 0 - nothing and 1 - increment
@@ -172,16 +166,9 @@ userSchema.methods.rate = function(testId, action) {
 userSchema.methods.like = function(testId) {
 	const index = this.tests.findIndex(t => t.testId.toString() === testId);
 	if (index === -1) return;
-	const test = { ...this.tests[index]._doc
-	}; // Some problems with "this", so used field _doc
-	const {
-		isLiked,
-		isDisliked
-	} = test;
-	let {
-		like,
-		dislike
-	} = {
+	const test = { ...this.tests[index]._doc }; // Some problems with "this", so used field _doc
+	const { isLiked, isDisliked } = test;
+	let { like, dislike } = {
 		like: 0,
 		dislike: 0
 	}; // -1 is decrement value, 0 - nothing and 1 - increment
@@ -213,16 +200,9 @@ userSchema.methods.like = function(testId) {
 userSchema.methods.dislike = function(testId) {
 	const index = this.tests.findIndex(t => t.testId.toString() === testId);
 	if (index === -1) return;
-	const test = { ...this.tests[index]._doc
-	}; // Some problems with "this", so used field _doc
-	const {
-		isLiked,
-		isDisliked
-	} = test;
-	let {
-		like,
-		dislike
-	} = {
+	const test = { ...this.tests[index]._doc }; // Some problems with "this", so used field _doc
+	const { isLiked, isDisliked } = test;
+	let { like, dislike } = {
 		like: 0,
 		dislike: 0
 	}; // -1 is decrement value, 0 - nothing and 1 - increment

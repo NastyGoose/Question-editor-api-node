@@ -1,6 +1,6 @@
 ## Introduction
 
-This project is the backend of "Question editor", a website for creating questions.
+This project is the backend of "Quesed", a website for creating questions.
 
 ## Setup
 
@@ -22,9 +22,10 @@ Next, from the project folder, install the dependencies:
 
 ### Populate the Database
 
+    set ADMIN_PASSWORD=your_password
     node seed.js
 
-### Run the Tests
+### Run the Tests (In development)
 
 You're almost done! Run the tests to make sure everything is working:
 
@@ -50,8 +51,8 @@ If you look at config/default.json, you'll see a property called jwtPrivateKey. 
 
 On Mac:
 
-    export quesEd_jwtPrivateKey=yourSecureKey
+    export quesed_jwtPrivateKey=yourSecureKey
 
 On Windows:
 
-    set quesEd_jwtPrivateKey=yourSecureKey
+    set quesed_jwtPrivateKey=yourSecureKey
