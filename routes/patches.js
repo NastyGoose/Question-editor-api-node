@@ -5,7 +5,7 @@ const { Patch, validator, actions } = require("../models/patch");
 
 const validate = require("../middleware/validate");
 const validateObjectId = require("../middleware/validateObjectId");
-const getLastReleaseId = require("../middleware/getFirstReleaseId");
+// const getLastReleaseId = require("../middleware/getFirstReleaseId");
 const auth = require("../middleware/auth");
 
 const patchValidator = require("../validator/validatePatch");
@@ -221,45 +221,37 @@ router.delete(
 	}
 );
 
-function condition(compareArg) {
-	return compareArg === "new";
-}
+router.get("/download/:id", async (req, res) => {
+	debug("Trying to download patch");
+	const patches = await Patch.find({ dateRelease: { $ne: null } });
+	if (!patches.length) return res.status(404).send("Patch was not found.");
 
-router.get(
-	"/download/:id",
-	[getLastReleaseId(condition), validateObjectId],
-	async (req, res) => {
-		debug("Trying to download patch");
-		const patch = await Patch.findById(req.params.id);
-		if (!patch) return res.status(404).send("Patch was not found.");
+	// const patches = await Patch.find({
+	// 	dateRelease: {
+	// 		$lt: patch.dateRelease
+	// 	}
+	// });
 
-		const patches = await Patch.find({
-			dateRelease: {
-				$gt: patch.dateRelease
-			}
-		});
+	const testsId = flattenDeep(patches.map(p => p.tests)).map(t => {
+		return {
+			_id: t
+		};
+	});
 
-		const testsId = flattenDeep(patches.map(p => p.tests)).map(t => {
-			return {
-				_id: t
-			};
-		});
+	const tests = await Test.find()
+		.or(testsId)
+		.select("-_id question answers.isCorrect answers._id answers.answer");
 
-		const tests = await Test.find()
-			.or(testsId)
-			.select("-_id question answers.isCorrect answers._id answers.answer");
+	const fileLocation = ".//uploads//tests.json";
 
-		const fileLocation = ".//uploads//tests.json";
-
-		fs.writeFile(fileLocation, JSON.stringify(tests), function(err) {
-			if (err) {
-				debug(err);
-			}
-			debug("Saved!");
-			res.download(fileLocation);
-			debug("Patch was downloaded");
-		});
-	}
-);
+	fs.writeFile(fileLocation, JSON.stringify(tests), function(err) {
+		if (err) {
+			debug(err);
+		}
+		debug("Saved!");
+		res.download(fileLocation);
+		debug("Patch was downloaded");
+	});
+});
 
 module.exports = router;
