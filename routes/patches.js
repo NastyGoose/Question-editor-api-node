@@ -242,16 +242,20 @@ router.get("/download/:id", async (req, res) => {
 		.or(testsId)
 		.select("-_id question answers.isCorrect answers._id answers.answer");
 
-	const fileLocation = ".//uploads//tests.json";
+	res.send(tests);
 
-	fs.writeFile(fileLocation, JSON.stringify(tests), function(err) {
-		if (err) {
-			debug(err);
-		}
-		debug("Saved!");
-		res.download(fileLocation);
-		debug("Patch was downloaded");
-	});
+	return;
+
+	// 	const fileLocation = ".//uploads//tests.json";
+
+	// fs.writeFile(fileLocation, JSON.stringify(tests), function(err) {
+	// 	if (err) {
+	// 		debug(err);
+	// 	}
+	// 	debug("Saved!");
+	// 	res.download(fileLocation);
+	// 	debug("Patch was downloaded");
+	// });
 });
 
 module.exports = router;
