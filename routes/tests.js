@@ -48,6 +48,9 @@ router.get("/", async (req, res) => {
 		.populate("patch", "name")
 		.select("-__v -description -answers");
 
+	const docCount = await Test.find(query).documentCount();
+	const pagesCount = docCount / pageSize;
+
 	let patch = await Patch.findOne({
 		dateRelease: {
 			$eq: null
@@ -58,7 +61,8 @@ router.get("/", async (req, res) => {
 
 	res.send({
 		tests,
-		patch
+		patch,
+		pagesCount
 	});
 	debug("Tests sended");
 });
