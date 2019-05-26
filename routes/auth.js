@@ -1,14 +1,12 @@
 const bcrypt = require("bcrypt");
-const {
-	User
-} = require("../models/user");
+const { User } = require("../models/user");
 const express = require("express");
 const router = express.Router();
-const validator = require("../validator/validateAuth");
+const validatorAuth = require("../validator/validateAuth");
 const validate = require("../middleware/validate");
 const debug = require("debug")("node:auth");
 
-router.post("/", validate(validator), async (req, res) => {
+router.post("/", validate(validatorAuth), async (req, res) => {
 	debug("Trying to authorize");
 	const user = await User.findOne({
 		email: req.body.email

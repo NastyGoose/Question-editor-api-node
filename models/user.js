@@ -253,5 +253,17 @@ function validateUser(user) {
 	return Joi.validate(user, schema);
 }
 
+function validateAuthUser(user) {
+	const schema = {
+		email: Joi.string()
+			.required()
+			.email(),
+		password: Joi.string().required()
+	};
+
+	return Joi.validate(user, schema);
+}
+
 exports.User = User;
 exports.validator = validateUser;
+exports.validatorAuth = validateAuthUser;
