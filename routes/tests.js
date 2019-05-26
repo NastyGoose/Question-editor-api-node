@@ -62,7 +62,7 @@ router.get("/", async (req, res) => {
 	res.send({
 		tests,
 		patch,
-		pagesCount
+		pagesCount: 3
 	});
 	debug("Tests sended");
 });
