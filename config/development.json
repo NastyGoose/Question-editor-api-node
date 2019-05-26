@@ -13,7 +13,7 @@
   },
   "page": {
     "name": "page",
-    "size": 999
+    "size": 16
   },
   "port": "3900",
   "requiresAuth": true
