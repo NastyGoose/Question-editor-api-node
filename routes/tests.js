@@ -48,7 +48,7 @@ router.get("/", async (req, res) => {
 		.populate("patch", "name")
 		.select("-__v -description -answers");
 
-	const docCount = await Test.find(query).documentCount();
+	const docCount = await Test.find(query).countDocuments();
 	const pagesCount = docCount / pageSize;
 
 	let patch = await Patch.findOne({
